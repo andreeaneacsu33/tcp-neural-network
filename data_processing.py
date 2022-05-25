@@ -29,10 +29,15 @@ class DataExtraction:
         gn = df.groupby("Name")
         test_names = df["Name"].unique()  # a list with unique test names
         data = []
+        durations = []
         # iterate through each unique test case name
         for test in test_names:
-            row = [test]
+            row = [test]  # append test name
             test_group = gn.get_group(test)
+            duration = test_group.iloc[0].Duration
+            durations.append(duration)
+            row.append(duration)  # append test duration
+
             all_cycles_verdict = 0
             all_cycles_runs = 0
             for cycle in range(1, 326):
@@ -50,15 +55,25 @@ class DataExtraction:
             row.append(all_cycles_verdict)
             row.append(all_cycles_runs)
             data.append(row)
+        self._compute_labels(durations, data)
         self._write_df_to_file(self.DATA_RESULTS_FILENAME, data)
+
+    @staticmethod
+    def _compute_labels(durations, data):
+        min_duration = min(durations)
+        max_duration = max(durations)
+        for i in range(0, len(durations)):
+            label = int((durations[i] - min_duration) / (max_duration - min_duration) * 150)
+            data[i].append(label)
 
     def _write_df_to_file(self, file_name, data, columns=None):
         if columns is None:
-            columns = ["Name"]
+            columns = ["Name", "Duration"]
             for cycle in range(1, 326):
                 columns.append("Cycle {}".format(cycle))
                 columns.append("Verdict Cycle {}".format(cycle))
             columns.append("All Cycles Verdict")
             columns.append("Nr Cycles Run")
+            columns.append("Label")
         ddf = pd.DataFrame(data, columns=columns)
         ddf.to_excel(file_name, sheet_name=self.DATASET_SHEET_NAME, index=False)
