@@ -55,15 +55,30 @@ class DataExtraction:
             row.append(all_cycles_verdict)
             row.append(all_cycles_runs)
             data.append(row)
-        self._compute_labels(durations, data)
+        labels = self._compute_labels(durations, data)
+        self._compute_class(labels, data)
         self._write_df_to_file(self.DATA_RESULTS_FILENAME, data)
 
     @staticmethod
     def _compute_labels(durations, data):
         min_duration = min(durations)
         max_duration = max(durations)
+        labels = []
         for i in range(0, len(durations)):
             label = int((durations[i] - min_duration) / (max_duration - min_duration) * 150)
+            labels.append(label)
+            data[i].append(label)
+        return labels
+
+    @staticmethod
+    def _compute_class(labels, data):
+        for i in range(0, len(labels)):
+            if labels[i] in range(0, 5):
+                label = 0  # less critical
+            elif labels[i] in range(5, 12):
+                label = 1  # medium critical
+            else:
+                label = 2  # high critical
             data[i].append(label)
 
     def _write_df_to_file(self, file_name, data, columns=None):
@@ -75,5 +90,6 @@ class DataExtraction:
             columns.append("All Cycles Verdict")
             columns.append("Nr Cycles Run")
             columns.append("Label")
+            columns.append("Class")
         ddf = pd.DataFrame(data, columns=columns)
         ddf.to_excel(file_name, sheet_name=self.DATASET_SHEET_NAME, index=False)
