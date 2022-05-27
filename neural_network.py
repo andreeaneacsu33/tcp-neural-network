@@ -8,12 +8,12 @@ DATA_RESULTS_FILENAME = "./data/paintcontrol_results.xlsx"
 feature_length = 655
 data = pd.read_excel(DATA_RESULTS_FILENAME)
 
-data = data.iloc[:, :feature_length]
+features = data.iloc[:, :feature_length]
 labels = data.iloc[:, feature_length]
 
-clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(89, 1), random_state=1, max_iter=1000)
+clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(10, 5), random_state=1, max_iter=1000)
 
-datasets = train_test_split(data,
+datasets = train_test_split(features,
                             labels,
                             test_size=0.2)
 
