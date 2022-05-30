@@ -34,7 +34,7 @@ with open(DATA_METRICS_FILENAME, 'w', encoding='UTF8', newline='') as f:
             clf = MLPClassifier(solver=solver, alpha=1e-5, hidden_layer_sizes=layer, random_state=1, max_iter=500)
 
             clf.fit(train_data, train_labels)
-            clf.score(train_data, train_labels)
+            clf.score(test_data, test_labels)
 
             predictions_train = clf.predict(train_data)
             predictions_test = clf.predict(test_data)
