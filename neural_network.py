@@ -5,6 +5,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 import pandas as pd
 
+pd.set_option('display.max_columns', 10)
+
 DATA_RESULTS_FILENAME = "./data/paintcontrol_results.xls"
 DATA_METRICS_FILENAME = "./data/paintcontrol_metrics.csv"
 
@@ -15,7 +17,7 @@ features = data.iloc[:, :feature_length]
 labels = data.iloc[:, feature_length]
 
 alg_config = ['lbfgs', 'sgd', 'adam']
-layers_config = [(10, ), (10, 10), (10, 10, 10)]
+layers_config = [(10,), (10, 10), (10, 10, 10)]
 
 datasets = train_test_split(features, labels, test_size=0.2)
 
@@ -52,9 +54,10 @@ with open(DATA_METRICS_FILENAME, 'w', encoding='UTF8', newline='') as f:
             fpr_test, tpr_test, thresholds_test = roc_curve(test_labels, predictions_test, pos_label=2)
             auc_test = auc(fpr_test, tpr_test)
 
-            writer.writerow([solver, layer, accuracy_train, accuracy_test, precision_train, precision_test, recall_train,
-                             recall_test, auc_train, auc_test])
+            writer.writerow(
+                [solver, layer, accuracy_train, accuracy_test, precision_train, precision_test, recall_train,
+                 recall_test, auc_train, auc_test])
 
-
-
-
+df = pd.read_csv(DATA_METRICS_FILENAME)
+df.sort_values(["Accuracy Test"], axis=0, ascending=False, inplace=True, na_position='first')
+print(df)
