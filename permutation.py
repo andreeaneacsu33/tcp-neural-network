@@ -5,6 +5,7 @@
 
 import csv
 
+import numpy as np
 import pandas as pd
 from sklearn.neural_network import MLPClassifier
 
@@ -14,6 +15,7 @@ DATASET_SHEET_NAME = "paintcontrol"
 DATA_PERMUTATIONS_FILENAME = "./data/paintcontrol_permutations.csv"
 
 feature_length = 655
+pd.set_option('display.max_columns', 100)
 
 alg_config = ['lbfgs', 'sgd', 'adam']
 layers_config = [(10,), (10,), (10,)]
@@ -49,6 +51,10 @@ with open(DATA_PERMUTATIONS_FILENAME, 'w', encoding='UTF8', newline='') as f:
     data = pd.read_excel(DATA_RESULTS_FILENAME)
     data = data.sort_values(by='Label', ascending=False)
     writer.writerow(['Initial', data['Name'].to_numpy()])
+    writer.writerow(['Random', np.random.permutation(data['Name'])])
+    data = data.sort_values(by='All Cycles Verdict', ascending=False)
+    #print(data)
+    writer.writerow(['Greedy', data['Name'].to_numpy()])
     for i in range(0, 3):
         writer.writerow([alg_config[i], permutations[i].to_numpy()])
 
